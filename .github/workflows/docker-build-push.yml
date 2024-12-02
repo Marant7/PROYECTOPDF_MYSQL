@@ -28,12 +28,14 @@ jobs:
       uses: docker/build-push-action@v4
       with:
         context: .
+        file: ./Dockerfile
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/pdf-webapp:latest
     
     - name: Build and push MySQL
       uses: docker/build-push-action@v4
       with:
-        context: ./docker/mysql
+        context: .
+        file: ./Dockerfile.mysql
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/pdf-mysql:latest

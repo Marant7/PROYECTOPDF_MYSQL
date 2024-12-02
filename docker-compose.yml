@@ -1,0 +1,34 @@
+services:
+  webapp:
+    image: ${DOCKERHUB_USERNAME}/pdf-webapp:latest
+    container_name: pdf_webapp
+    ports:
+      - "5360:5360"
+    environment:
+      - ASPNETCORE_URLS=http://+:5360
+      - ConnectionStrings__DefaultConnection=Server=mysql;Database=pdfsolutions_test;Uid=root;Pwd=
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: always
+
+  mysql:
+    image: ${DOCKERHUB_USERNAME}/pdf-mysql:latest
+    container_name: pdf_db
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: pdfsolutions_test
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password --lower_case_table_names=1
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: always
+
+volumes:
+  mysql_data:
